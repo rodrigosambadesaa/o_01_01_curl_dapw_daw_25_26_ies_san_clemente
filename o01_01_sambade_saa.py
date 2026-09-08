@@ -3,6 +3,7 @@ import json
 import requests
 import mimetypes
 import base64
+from urllib.parse import urlparse
 
 try:
     from auth_config import HEADERS, COOKIES
@@ -21,6 +22,16 @@ def gardar_imaxe(directorio, nome_imaxe, contido):
     with open(ruta_completa, "wb") as f:
         f.write(contido)
     print(f"Imaxe gardada en: {ruta_completa}")
+
+
+def e_host_autorizado(url):
+    """Evita enviar credenciais a dominios de terceiros incluidos no HAR."""
+    host = (urlparse(url).hostname or "").lower().rstrip(".")
+    return any(host == dominio or host.endswith(f".{dominio}") for dominio in (
+        "x.com",
+        "twitter.com",
+        "twimg.com",
+    ))
 
 
 def main():
@@ -56,7 +67,10 @@ def main():
                 contido = base64.b64decode(b64data)
                 gardar_imaxe(directorio_saida, nome, contido)
             else:  # descarga por HTTP
-                resposta = requests.get(url, headers=HEADERS, cookies=COOKIES, timeout=30)
+                credenciais_permitidas = e_host_autorizado(url)
+                headers = HEADERS if credenciais_permitidas else {}
+                cookies = COOKIES if credenciais_permitidas else {}
+                resposta = requests.get(url, headers=headers, cookies=cookies, timeout=30)
                 if resposta.status_code == 200:
                     gardar_imaxe(directorio_saida, nome, resposta.content)
                 else:
