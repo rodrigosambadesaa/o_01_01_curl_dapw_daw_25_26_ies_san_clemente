@@ -22,7 +22,8 @@ Pasos principais:
 
 ## 📌 Estrutura do proxecto
 - `o01_01_sambade_saa.py`: Script principal para procesar o ficheiro HAR e descargar as imaxes.
-- `auth_config.py`: Plantilla pública para configurar localmente headers/cookies.
+- `auth_config.example.py`: Plantilla pública para configurar localmente headers/cookies.
+- `auth_config.py`: Archivo local con credenciales; está excluido de Git y nunca debe subirse.
 - `captura.har` / `captura_sanitizada.har`: Ficheiros HAR exportados desde Firefox (excluídos do repositorio).
 - `imaxes_descargadas/`: Directorio onde se gardan as imaxes descargadas polo script.
 - `imagenes_listado.txt`: Ficheiro de rexistro con información das imaxes procesadas.
@@ -48,11 +49,11 @@ Para xerar o ficheiro HAR necesario, segue estes pasos en X (antiga Twitter):
 
 ### 🔑 Configuración local de cookies e headers
 
-Despois de xerar o HAR, extrae localmente as cookies de autenticación e configura os headers apropiados en `auth_config.py`:
+Despois de xerar o HAR, copia `auth_config.example.py` como `auth_config.py` e configura localmente os headers e cookies apropiados:
 
 1. Abre o ficheiro HAR e busca unha petición de imaxe exitosa.
 2. Copia as cookies e headers usando [curlconverter.com](https://curlconverter.com/).
-3. Actualiza `auth_config.py` coas túas cookies e headers específicos. Non fagas push despois de engadir credenciais reais; utiliza unha copia local e restaura a plantilla antes de publicar.
+3. Actualiza `auth_config.py` coas túas cookies e headers específicos. Está excluído por `.gitignore`; comproba sempre `git status` antes de facer push.
 
 Se as cookies expostas neste proxecto foron reais, pecha a sesión correspondente e revógaas/renóvaas en X. Unha credencial publicada debe considerarse comprometida aínda que despois se elimine do código actual.
 
