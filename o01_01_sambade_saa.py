@@ -4,6 +4,14 @@ import requests
 import mimetypes
 import base64
 
+try:
+    from auth_config import HEADERS, COOKIES
+except ImportError as exc:
+    raise SystemExit(
+        "Falta auth_config.py. Crea una copia de auth_config.example.py "
+        "y añade tus credenciales localmente; ese archivo está excluido de Git."
+    ) from exc
+
 # -------------------------------
 # Función para gardar unha imaxe
 # -------------------------------
@@ -36,37 +44,6 @@ def main():
 
     print(f"Detectadas {len(urls_imaxes)} imaxes no HAR.")
 
-    # 3. Headers e cookies para autenticación en X/Twitter
-    cookies = {
-        'guest_id': 'REDACTED_SESSION_VALUE',
-        '__cf_bm': 'REDACTED_SESSION_VALUE',
-        'gt': 'REDACTED_SESSION_VALUE',
-        '__cuid': 'REDACTED_SESSION_VALUE',
-        'kdt': 'REDACTED_SESSION_VALUE',
-        'twid': 'REDACTED_SESSION_VALUE',
-        'ct0': 'REDACTED_SESSION_VALUE',
-        'auth_token': 'REDACTED_SESSION_VALUE',
-        'lang': 'es',
-        'd_prefs': 'REDACTED_SESSION_VALUE',
-        'guest_id_ads': 'REDACTED_SESSION_VALUE',
-        'guest_id_marketing': 'REDACTED_SESSION_VALUE',
-        'personalization_id': 'REDACTED_SESSION_VALUE',
-    }
-
-    headers = {
-        'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64; rv:139.0) Gecko/20100101 Firefox/139.0',
-        'Accept': 'image/avif,image/webp,image/png,image/svg+xml,image/*;q=0.8,*/*;q=0.5',
-        'Accept-Language': 'gl-ES,gl;q=0.8,en-US;q=0.5,en;q=0.3',
-        'Referer': 'https://x.com/',
-        'DNT': '1',
-        'Sec-GPC': '1',
-        'Connection': 'keep-alive',
-        'Sec-Fetch-Dest': 'image',
-        'Sec-Fetch-Mode': 'no-cors',
-        'Sec-Fetch-Site': 'cross-site',
-        'Priority': 'u=5, i',
-    }
-
     # 4. Descargar e gardar imaxes
     for i, (url, mime) in enumerate(urls_imaxes, start=1):
         try:
@@ -79,7 +56,7 @@ def main():
                 contido = base64.b64decode(b64data)
                 gardar_imaxe(directorio_saida, nome, contido)
             else:  # descarga por HTTP
-                resposta = requests.get(url, headers=headers, cookies=cookies)
+                resposta = requests.get(url, headers=HEADERS, cookies=COOKIES, timeout=30)
                 if resposta.status_code == 200:
                     gardar_imaxe(directorio_saida, nome, resposta.content)
                 else:
