@@ -52,7 +52,7 @@ El commit inicial contenía cookies `auth_token` y `ct0` en código. **Es necesa
 ```bash
 python -m pip install git-filter-repo
 # Ejecutar en un clon espejo del repositorio, con todas las ramas y etiquetas.
-git filter-repo --path o01_01_sambade_saa.py --replace-text ../replacements.txt
+git filter-repo --replace-text ../replacements.txt
 # replacements.txt debe contener expresiones exactas de las credenciales filtradas,
 # NUNCA publicarse en Git y destruirse con seguridad tras la operación.
 # Revisar el historial y coordinar un push --force --mirror solo después de verificar.
