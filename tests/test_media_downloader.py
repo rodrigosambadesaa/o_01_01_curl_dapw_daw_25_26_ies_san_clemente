@@ -2,6 +2,7 @@ import base64
 import json
 from pathlib import Path
 from types import SimpleNamespace
+from typing import ClassVar
 
 import pytest
 import requests
@@ -114,7 +115,7 @@ def test_har_never_uses_captured_cookies(tmp_path, monkeypatch):
 class Response:
     status_code=200
     is_redirect=False
-    headers={'Content-Type':'video/mp4', 'Content-Length':'4'}
+    headers: ClassVar[dict[str, str]] = {'Content-Type':'video/mp4', 'Content-Length':'4'}
     def __enter__(self): return self
     def __exit__(self,*a): pass
     def raise_for_status(self): pass
@@ -141,7 +142,7 @@ def test_http_fetch_does_not_forward_auth_or_follow_redirects(tmp_path,monkeypat
 
 
 def test_http_fetch_rejects_wrong_content_type(tmp_path,monkeypatch):
-    class Html(Response): headers={'Content-Type':'text/html'}
+    class Html(Response): headers: ClassVar[dict[str, str]] = {'Content-Type':'text/html'}
     monkeypatch.setattr(requests,'Session',lambda:SessionWithResponse(Html()))
     with pytest.raises(ValueError,match='MIME'):
         md.fetch_media('https://video.twimg.com/fake.mp4',tmp_path/'file.mp4','video/mp4',50)
