@@ -10,10 +10,10 @@ import binascii
 import ipaddress
 import json
 import os
-from pathlib import Path
 import subprocess
 import sys
 import tempfile
+from pathlib import Path
 from urllib.parse import urlsplit
 
 import requests
@@ -147,7 +147,7 @@ def download_har(har_path: Path, out_dir: Path, max_bytes: int, max_items: int) 
     with har_path.open(encoding="utf-8") as handle:
         entries = json.load(handle)["log"]["entries"]
     if not isinstance(entries, list):
-        raise ValueError("El HAR no contiene entradas válidas")
+        raise TypeError("El HAR no contiene entradas válidas")
     found, downloaded = 0, 0
     seen: set[str] = set()
     for entry in entries:
