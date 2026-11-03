@@ -1,96 +1,76 @@
-# O_01_curl
+# Descargador multimedia — práctica O01.01 (DAW)
 
-Este proxecto forma parte da tarefa **O01.01 Libraría request e cURL** de Despregamento de Aplicacións Web.  
-O obxectivo é automatizar a descarga de imaxes dunha rede social simulando as peticións que fai o navegador, empregando un ficheiro HAR e a libraría `requests` de Python.
+Proyecto educativo para descargar **imágenes, vídeos y audio** de contenidos públicos de X/Twitter, YouTube, Instagram, TikTok y otras redes sociales compatibles con los extractores. Mantiene el procesamiento de archivos HAR para recursos multimedia directos.
 
----
+> **Aviso:** No garantiza descargar *todo* lo publicado en una plataforma. Un HAR solo incluye el contenido cargado por el navegador, no una cuenta entera; los vídeos HLS/DASH se descargan mejor por URL de publicación. El acceso privado, DRM, contenido eliminado, restricciones geográficas, cambios de API y límites de los servicios pueden impedir descargas. Respeta los derechos de autor, la privacidad y las condiciones legales aplicables.
 
-## 📄 Enunciado da práctica
+## Requisitos
 
-Na seguinte tarefa imos intentar automatizar a descarga de imaxes dunha rede social.  
-O principal escollo é a autorización: o servidor comproba que a petición da imaxe teña permiso para poder vela (e descargala).  
-
-Para iso, obtemos as **cabeceiras e cookies** dun navegador, e cun script en Python simulamos que é o propio navegador quen fai as peticións, aportando a nosa autorización almacenada nas cookies.
-
-Pasos principais:
-1. Exportar un ficheiro HAR cunha sesión iniciada na rede social.
-2. Copiar como cURL unha petición de imaxe e convertela a Python con [curlconverter.com](https://curlconverter.com/).
-3. Adaptar o código xerado ao script de Python.
-4. Ler o HAR, filtrar as imaxes e descargalas con `requests`.
-
----
-
-## 📌 Estrutura do proxecto
-- `o01_01_sambade_saa.py`: Script principal para procesar o ficheiro HAR e descargar as imaxes.
-- `auth_config.example.py`: Plantilla pública para configurar localmente headers/cookies.
-- `auth_config.py`: Archivo local con credenciales; está excluido de Git y nunca debe subirse.
-- `captura.har` / `captura_sanitizada.har`: Ficheiros HAR exportados desde Firefox (excluídos do repositorio).
-- `imaxes_descargadas/`: Directorio onde se gardan as imaxes descargadas polo script.
-- `imagenes_listado.txt`: Ficheiro de rexistro con información das imaxes procesadas.
-- `.gitignore`: Exclúe ficheiros sensibles e directorios xerados automaticamente.
-
-⚠️ **Nota importante:**  
-Os ficheiros HAR están excluídos do repositorio por motivos de seguridade, xa que conteñen cookies e tokens de sesión. Cada usuario debe xerar o seu propio HAR seguindo as instrucións.
-
----
-
-## 📝 Como xerar o ficheiro HAR en X (antiga Twitter)
-
-Para xerar o ficheiro HAR necesario, segue estes pasos en X (antiga Twitter):
-
-1. Abre unha **ventá privada** en Firefox, sen ningunha extensión activada.
-2. Inicia sesión na túa conta de X.
-3. Preme F12 para abrir as ferramentas de desenvolvemento e vai á pestana **Rede/Network**.
-4. Actualiza a páxina ou navega ata a sección onde aparecen as imaxes que queres descargar.
-5. Fai clic dereito en calquera punto da lista de peticións e selecciona **"Exportar como HAR"** ou **"Save all as HAR"**.
-6. Garda o ficheiro HAR e cópiao ao directorio do proxecto co nome `captura.har`.
-
-⚠️ **Importante:** Non uses extensións, xa que poden modificar as peticións ou engadir cabeceiras/cookies non desexadas.
-
-### 🔑 Configuración local de cookies e headers
-
-Despois de xerar o HAR, copia `auth_config.example.py` como `auth_config.py` e configura localmente os headers e cookies apropiados:
-
-1. Abre o ficheiro HAR e busca unha petición de imaxe exitosa.
-2. Copia as cookies e headers usando [curlconverter.com](https://curlconverter.com/).
-3. Actualiza `auth_config.py` coas túas cookies e headers específicos. Está excluído por `.gitignore`; comproba sempre `git status` antes de facer push.
-
-Se as cookies expostas neste proxecto foron reais, pecha a sesión correspondente e revógaas/renóvaas en X. Unha credencial publicada debe considerarse comprometida aínda que despois se elimine do código actual.
-
----
-
-## 🔧 Requisitos
-- Python 3
-- Paquete `requests`
-
-Instalación de dependencias:
-```bash
-pip install requests
-```
+- Python 3.11 o superior.
+- `python -m pip install -r requirements.txt`.
+- Recomendado: `ffmpeg` instalado en PATH para fusionar vídeo y audio de distintas pistas (YouTube y otros).
 
 ## Uso
-1. Exporta un ficheiro HAR desde Firefox e cópiao como `captura.har` no directorio do proxecto.
-2. Executa o script:
-   ```bash
-   python o01_01_sambade_saa.py
-   ```
-3. As imaxes detectadas gardaranse en `imaxes_descargadas/`.
 
-## Funcionamento
-O script:
-- Lê o ficheiro HAR especificado (`captura.har` por defecto).
-- Busca todas as entradas de resposta con tipo MIME de imaxe.
-- Descarga cada imaxe usando cookies de autenticación para evitar erros 403.
-- Garda as imaxes en `imaxes_descargadas/` con nomes secuenciais.
-- Xera un ficheiro de rexistro `imagenes_listado.txt` con información detallada de cada descarga.
+```bash
+# Vídeo de YouTube
+python o01_01_sambade_saa.py --url 'https://www.youtube.com/watch?v=ID'
 
-### 📊 Resultados típicos
-- **Imaxes públicas** (favicons, emojis): Descargan correctamente (200 OK)
-- **Imaxes de perfil/contido**: Requiren autenticación, poden dar erro 403 sen cookies válidas
-- **Imaxes base64**: Procésanse directamente sen petición HTTP
+# Publicación de X con fotos, GIF o vídeo: prueba dos extractores
+python o01_01_sambade_saa.py --url 'https://x.com/usuario/status/ID'
 
-## Autoría
-- Desenvolvido por Rodrigo Sambade
+# Publicaciones de Instagram y TikTok
+python o01_01_sambade_saa.py --url 'https://www.instagram.com/p/ID/' --url 'https://www.tiktok.com/@usuario/video/ID'
 
-## Licenza
-Uso educativo.
+# Captura HAR exportada desde DevTools (sin reutilizar cookies)
+python o01_01_sambade_saa.py --har captura.har
+
+# Limita archivos por extractor y peso por archivo
+python o01_01_sambade_saa.py --url 'https://x.com/usuario/status/ID' --max-items 10 --max-size-mb 50
+
+# Selecciona el extractor cuando sea necesario
+python o01_01_sambade_saa.py --url 'https://x.com/usuario/status/ID' --backend gallery-dl
+```
+
+La salida se guarda por defecto en `multimedia_descargada/`, separada en `har/`, `gallery-dl/` y `yt-dlp/`. En modo automático, para X, Instagram y TikTok se prueban **ambos** extractores para ampliar formatos admitidos. Puede haber archivos duplicados entre extractores. Se admite `--output DIRECTORIO`.
+
+Con `captura.har` en el directorio actual, también funciona el comando antiguo `python o01_01_sambade_saa.py` sin argumentos.
+
+## Seguridad
+
+- **Nunca** se publican los archivos HAR: pueden contener cookies, tokens de acceso y URLs privadas. No deben compartirse tampoco como logs de CI.
+- El modo HAR **no reutiliza cabeceras, cookies ni tokens** de las solicitudes capturadas. Solo acepta recursos incrustados en el HAR o descargas HTTPS desde una lista controlada de dominios de multimedia; sin redirecciones automáticas y sin usar proxies del entorno.
+- Valida host, protocolo, puertos, formatos MIME y límites por archivo; rechaza SVG y contenido HTML por seguridad.
+- Las URLs de publicaciones se restringen a dominios reconocidos; los extractores externos pueden fallar o cambiar su funcionamiento, por lo que se deben mantener actualizados.
+- No se ejecutan comandos de shell con URLs proporcionadas por usuarios y no se muestran errores con enlaces privados.
+- No elude controles de acceso ni DRM, y no incorpora credenciales ni cookies al código fuente.
+
+### Historial comprometido
+
+El commit inicial contenía cookies `auth_token` y `ct0` en código. **Es necesario revocar las sesiones afectadas.** Para eliminar estos valores del historial remoto, se debe realizar una limpieza **coordinada** de todas las referencias, forks y copias existentes. No basta con eliminar el archivo del último commit. Ejemplo de trabajo local, tras crear un respaldo privado:
+
+```bash
+python -m pip install git-filter-repo
+# Ejecutar en un clon espejo del repositorio, con todas las ramas y etiquetas.
+git filter-repo --replace-text ../replacements.txt
+# replacements.txt debe contener expresiones exactas de las credenciales filtradas,
+# NUNCA publicarse en Git y destruirse con seguridad tras la operación.
+# Revisar el historial y coordinar un push --force --mirror solo después de verificar.
+```
+
+**Este repositorio todavía requiere limpieza del historial** hasta que se complete y verifique esa operación; la presente mejora evita reintroducir secretos.
+
+## Pruebas
+
+```bash
+python -m pip install -r requirements.txt -r requirements-dev.txt
+python -m pytest -q
+ruff check .
+python -m pip_audit -r requirements.txt
+```
+
+GitHub Actions ejecuta pruebas, análisis estático y auditoría de dependencias en Python 3.11 y 3.13. Los tests no hacen descargas a las redes sociales reales: prueban validación, HAR, tipos MIME, límites y comandos externos con dobles de prueba. Para verificar plataformas reales se precisan pruebas manuales sobre URLs públicas autorizadas.
+
+## Proyecto académico
+
+Ampliación de la práctica O01.01 «Libraría requests e cURL» del ciclo DAW en IES San Clemente. Autoría: Rodrigo Sambade. Uso educativo.
