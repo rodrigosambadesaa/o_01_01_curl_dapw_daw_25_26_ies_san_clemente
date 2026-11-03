@@ -1,7 +1,23 @@
-captura.har
-captura_sanitizada.har
-o01_01_sambade_saa.zip
+# Capturas y credenciales; un HAR puede contener sesiones y tokens
+*.har
+*.har.gz
+*.netlog
+*.cookies
+cookies.txt
+*secret*
+*.env
+.env*
+/auth_config.py
+# Archivos multimedia y salidas
+multimedia_descargada/
 imaxes_descargadas/
 imagenes_listado.txt
+*.part
+# Python y pruebas
 __pycache__/
-/auth_config.py
+.pytest_cache/
+.ruff_cache/
+.venv/
+venv/
+*.py[cod]
+*.zip
